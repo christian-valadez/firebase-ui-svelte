@@ -1,46 +1,43 @@
 <script>
   import Button from './Button.svelte'
   import Text from './Text.svelte'
+  import {
+    GoogleAuthProvider,
+    getAuth,
+    signInWithRedirect,
+    FacebookAuthProvider,
+    TwitterAuthProvider,
+    GithubAuthProvider
+  } from 'firebase/auth'
 
-  export let supabaseClient
   export let providers
   export let socialLayout
   export let socialButtonSize
   export let socialColors
   export let view
 
-  let loading = false, error = ''
+  let loading = false,
+    error = ''
 
   const buttonStyles = {
     google: {
       'background-color': '#ce4430',
       color: 'white',
+      provider: new GoogleAuthProvider()
     },
     facebook: {
       'background-color': '#4267B2',
       color: 'white',
+      provider: new FacebookAuthProvider()
     },
     twitter: {
       'background-color': '#1DA1F2',
-    },
-    gitlab: {
-      'background-color': '#FC6D27',
+      provider: new TwitterAuthProvider()
     },
     github: {
       'background-color': '#333',
       color: 'white',
-    },
-    bitbucket: {
-      'background-color': '#205081',
-      color: 'white',
-    },
-    azure: {
-      'background-color': '#0072c6',
-      color: 'white',
-    },
-    discord: {
-      'background-color': '#5865F2',
-      color: 'white',
+      provider: new GithubAuthProvider()
     }
   }
 
@@ -49,8 +46,7 @@
   async function handleProviderSignIn(provider) {
     loading = true
 
-    const { error: signInError } = await supabaseClient.auth.signIn({ provider })
-    if (signInError) error = signInError.message
+    await signInWithRedirect(getAuth(), buttonStyles[provider].provider)
 
     loading = false
   }
@@ -61,7 +57,14 @@
 
   <div class="providers" class:horizontal={socialLayout == 'horizontal'}>
     {#each providers as provider}
-      <Button block shadow icon={provider} size={socialButtonSize} style={socialColors ? buttonStyles[provider] : {}} on:click={() => handleProviderSignIn(provider)}>
+      <Button
+        block
+        shadow
+        icon={provider}
+        size={socialButtonSize}
+        style={socialColors ? buttonStyles[provider] : {}}
+        on:click={() => handleProviderSignIn(provider)}
+      >
         {#if socialLayout == 'vertical'}{view == 'sign_up' ? 'Sign up' : 'Sign in'} with {provider}{/if}
       </Button>
     {/each}
@@ -100,7 +103,8 @@
     margin: 1rem;
   }
 
-  .divider::before, .divider::after {
+  .divider::before,
+  .divider::after {
     border-bottom-style: solid;
     border-bottom-width: 1px;
     top: 50%;
