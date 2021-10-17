@@ -1,9 +1,7 @@
 import type { SvelteComponentTyped } from 'svelte'
-import type { SupabaseClient } from '@supabase/supabase-js'
 
 export interface AuthProps {
-  supabaseClient: SupabaseClient
-  providers?: ('azure' | 'bitbucket' | 'facebook' | 'github' | 'gitlab' | 'google')[]
+  providers?: ('facebook' | 'github' | 'google' | 'twitter')[]
   view?: 'sign_in' | 'sign_up' | 'magic_link' | 'forgotten_password'
   classes?: string
   style?: string

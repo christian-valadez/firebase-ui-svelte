@@ -1,12 +1,10 @@
 <script>
   import EmailAuthView from './EmailAuthView.svelte'
   import SocialAuthView from './SocialAuthView.svelte'
-  import MagicLinkView from './MagicLinkView.svelte'
   import ForgottenPasswordView from './ForgottenPasswordView.svelte'
 
   let classes = ''
 
-  export let supabaseClient
   export { classes as class }
   export let style = ''
   export let socialLayout = 'vertical'
@@ -22,21 +20,12 @@
 
 <div class="component {classes}" {style}>
   <div class="container">
-    <SocialAuthView
-      {supabaseClient}
-      {providers}
-      {socialLayout}
-      {socialButtonSize}
-      {socialColors}
-      {view}
-    />
+    <SocialAuthView {providers} {socialLayout} {socialButtonSize} {socialColors} {view} />
 
     {#if view == 'sign_in' || view == 'sign_up'}
-      <EmailAuthView {supabaseClient} {view} {setView}/>
-    {:else if view == 'magic_link'}
-      <MagicLinkView {supabaseClient} {setView}/>
+      <EmailAuthView {view} {setView} />
     {:else if view == 'forgotten_password'}
-      <ForgottenPasswordView {supabaseClient} {setView}/>
+      <ForgottenPasswordView {setView} />
     {/if}
   </div>
 </div>

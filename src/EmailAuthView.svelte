@@ -3,12 +3,20 @@
   import Text from './Text.svelte'
   import Button from './Button.svelte'
   import Input from './Input.svelte'
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword
+  } from 'firebase/auth'
 
-  export let supabaseClient
   export let view
   export let setView
 
-  let error = '', message = '', loading = false, email = '', password = ''
+  let error = '',
+    message = '',
+    loading = false,
+    email = '',
+    password = ''
 
   async function submit() {
     error = ''
@@ -16,17 +24,18 @@
     loading = true
 
     if (view == 'sign_up') {
-      const { error: signUpError } = await supabaseClient.auth.signUp({
-        email, password
-      })
-
-      if (signUpError) error = signUpError.message
+      const auth = getAuth()
+      try {
+        await createUserWithEmailAndPassword(getAuth(), email, password)
+      } catch (e) {
+        error = e.message
+      }
     } else if (view == 'sign_in') {
-      const { error: signInError } = await supabaseClient.auth.signIn({
-        email, password
-      })
-
-      if (signInError) error = signInError.message
+      try {
+        await signInWithEmailAndPassword(getAuth(), email, password)
+      } catch (e) {
+        error = e.message
+      }
     }
 
     loading = false
@@ -34,8 +43,8 @@
 </script>
 
 <form on:submit|preventDefault={submit}>
-  <Input name="email" type="email" label="Email address" icon="mail" bind:value={email}/>
-  <Input name="password" type="password" label="Password" icon="key" bind:value={password}/>
+  <Input name="email" type="email" label="Email address" icon="mail" bind:value={email} />
+  <Input name="password" type="password" label="Password" icon="key" bind:value={password} />
 
   {#if view == 'sign_up'}
     <Button block primary size="large" {loading} icon="inbox">Sign up</Button>
